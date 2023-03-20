@@ -1,0 +1,39 @@
+
+server:
+  port: 8000
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+spring:
+  application:
+    name: gateway-service
+
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user/**
+          filters:
+            - RewritePath=/user/?(?<segment>.*), /$\{segment}
+            - CustomAuthFilter
+#            - AddRequestParameter=red, blue
+#            - AddRequestHeader=token, 123456
+#            - AddResponseHeader=authenticated, yes
+#            - Method=GET
+#            - After=2017-01-20T17:42:47.789-07:00
+#            - Cookie=valid, kakao
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/order/**
+          filters:
+            - RewritePath=/order/?(?<segment>.*), /$\{segment}
+#            - Method=POST
+#            - Before=2017-01-20T17:42:47.789-07:00
+#            - Cookie=valid, naver
